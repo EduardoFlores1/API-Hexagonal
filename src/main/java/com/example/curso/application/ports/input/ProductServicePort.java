@@ -9,5 +9,5 @@ public interface ProductServicePort {
     Page<Product> findAll(Pageable pageable);
     Product create(Product product);
     Product update(Long id, Product product);
-    void deleteById(Long id);
+    void disabledById(Long id);
 }

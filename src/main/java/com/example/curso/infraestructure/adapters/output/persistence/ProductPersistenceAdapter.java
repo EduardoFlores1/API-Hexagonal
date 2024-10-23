@@ -36,9 +36,4 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
                 productRepository.save(mapper.toProductEntity(product))
         );
     }
-
-    @Override
-    public void deleteById(Long id) {
-        productRepository.deleteById(id);
-    }
 }

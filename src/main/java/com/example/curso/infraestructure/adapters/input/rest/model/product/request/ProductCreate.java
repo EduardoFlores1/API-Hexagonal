@@ -1,4 +1,4 @@
-package com.example.curso.infraestructure.adapters.input.rest.model.request;
+package com.example.curso.infraestructure.adapters.input.rest.model.product.request;
 
 import com.example.curso.domain.utils.ProductStatus;
 import jakarta.validation.constraints.Min;

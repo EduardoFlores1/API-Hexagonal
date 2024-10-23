@@ -2,8 +2,8 @@ package com.example.curso.infraestructure.adapters.input.rest;
 
 import com.example.curso.application.ports.input.ProductServicePort;
 import com.example.curso.infraestructure.adapters.input.rest.mapper.ProductRestMapper;
-import com.example.curso.infraestructure.adapters.input.rest.model.request.ProductCreate;
-import com.example.curso.infraestructure.adapters.input.rest.model.response.ProductResponse;
+import com.example.curso.infraestructure.adapters.input.rest.model.product.request.ProductCreate;
+import com.example.curso.infraestructure.adapters.input.rest.model.product.response.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,9 +53,9 @@ public class ProductRestAdapter {
                         productServicePort.update(productId, productRestMapper.toProduct(create))));
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> delete(@PathVariable Long productId) {
-        productServicePort.deleteById(productId);
+    @PatchMapping("/{productId}/disabled")
+    public ResponseEntity<Void> disabledById(@PathVariable Long productId) {
+        productServicePort.disabledById(productId);
         return ResponseEntity.noContent().build();
     }
 }
