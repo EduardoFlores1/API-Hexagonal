@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 public interface CategoryServicePort {
     Category findById(Long id);
     Page<Category> findAll(Pageable pageable);
-    Category save(Category category);
+    Category create(Category category);
     Category update(Long id, Category category);
 }

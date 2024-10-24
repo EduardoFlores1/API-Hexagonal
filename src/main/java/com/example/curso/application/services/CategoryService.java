@@ -27,7 +27,7 @@ public class CategoryService implements CategoryServicePort {
     }
 
     @Override
-    public Category save(Category category) {
+    public Category create(Category category) {
         return categoryPersistencePort.save(category);
     }
 

@@ -1,7 +1,9 @@
 package com.example.curso.application.services;
 
 import com.example.curso.application.ports.input.ProductServicePort;
+import com.example.curso.application.ports.output.CategoryPersistencePort;
 import com.example.curso.application.ports.output.ProductPersistencePort;
+import com.example.curso.domain.exceptions.CategoryNotFoundException;
 import com.example.curso.domain.exceptions.ProductNotFoundException;
 import com.example.curso.domain.models.Product;
 import com.example.curso.domain.utils.ProductStatus;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class ProductService implements ProductServicePort {
 
     private final ProductPersistencePort productPersistencePort;
+    private final CategoryPersistencePort categoryPersistencePort;
 
     @Override
     public Product findById(Long id) {
@@ -32,9 +35,14 @@ public class ProductService implements ProductServicePort {
 
     @Override
     public Product create(Product product) {
-        product.setCreatedAt(LocalDateTime.now());
-        product.setUpdatedAt(LocalDateTime.now());
-        return productPersistencePort.save(product);
+        return categoryPersistencePort.findById(product.getCategory().getId())
+                        .map(category -> {
+                            product.setCategory(category);
+                            product.setCreatedAt(LocalDateTime.now());
+                            product.setUpdatedAt(LocalDateTime.now());
+                            return productPersistencePort.save(product);
+                        })
+                .orElseThrow(CategoryNotFoundException::new);
     }
 
     @Override
@@ -54,6 +62,7 @@ public class ProductService implements ProductServicePort {
     public void disabledById(Long id) {
         Optional<Product> productOptional = productPersistencePort.findById(id);
         if(productOptional.isPresent()) {
+            productOptional.get().setUpdatedAt(LocalDateTime.now());
             productOptional.get().setStatus(ProductStatus.DISABLED);
             productPersistencePort.save(productOptional.get());
         }

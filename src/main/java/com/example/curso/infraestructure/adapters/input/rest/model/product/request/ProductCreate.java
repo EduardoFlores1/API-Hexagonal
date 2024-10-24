@@ -16,4 +16,6 @@ public class ProductCreate {
     @Min(value = 1, message = "El precio debe ser igual o mayor a 1.")
     private BigDecimal price;
     private ProductStatus status;
+    @NotNull(message = "El id de la categoría es requerida.")
+    private Long categoryId;
 }

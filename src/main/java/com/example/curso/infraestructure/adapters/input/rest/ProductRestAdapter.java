@@ -23,7 +23,7 @@ public class ProductRestAdapter {
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> findAll(Pageable pageable) {
         Page<ProductResponse> productPage = productServicePort.findAll(pageable)
-                .map(productRestMapper::toProductResponse);
+                .map(productRestMapper::toResponse);
 
         if (productPage.hasContent()) {
             return ResponseEntity.ok(productPage);
@@ -34,14 +34,14 @@ public class ProductRestAdapter {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> findById(@PathVariable Long productId) {
         return ResponseEntity.ok(
-                productRestMapper.toProductResponse(productServicePort.findById(productId))
+                productRestMapper.toResponse(productServicePort.findById(productId))
         );
     }
 
     @PostMapping
     public ResponseEntity<ProductResponse> createOne(@Valid @RequestBody ProductCreate create) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productRestMapper.toProductResponse(
+                .body(productRestMapper.toResponse(
                         productServicePort.create(productRestMapper.toProduct(create))
                 ));
     }
@@ -49,7 +49,7 @@ public class ProductRestAdapter {
     @PutMapping("/{productId}")
     public ResponseEntity<ProductResponse> update(@Valid @RequestBody ProductCreate create, @PathVariable Long productId) {
         return ResponseEntity
-                .ok(productRestMapper.toProductResponse(
+                .ok(productRestMapper.toResponse(
                         productServicePort.update(productId, productRestMapper.toProduct(create))));
     }
 
