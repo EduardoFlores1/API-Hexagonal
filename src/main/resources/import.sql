@@ -1,4 +1,4 @@
-INSERT INTO categories(name, status, created_at, updated_at) VALUES('Microfonos', 'DISABLED', '2024-10-24 00:00:00', '2024-10-24 00:00:00');
+INSERT INTO categories(name, status, created_at, updated_at) VALUES('Micrófonos', 'DISABLED', '2024-10-24 00:00:00', '2024-10-24 00:00:00');
 INSERT INTO categories(name, status, created_at, updated_at) VALUES('Sillas Gamer', 'ENABLED', '2024-10-24 00:00:00', '2024-10-24 00:00:00');
 INSERT INTO categories(name, status, created_at, updated_at) VALUES('Monitores', 'ENABLED', '2024-10-24 00:00:00', '2024-10-24 00:00:00');
 INSERT INTO categories(name, status, created_at, updated_at) VALUES('Teclados', 'DISABLED', '2024-10-24 00:00:00', '2024-10-24 00:00:00');
