@@ -9,6 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = CategoryRestMapper.class)
 public interface ProductRestMapper {
     ProductResponse toResponse(Product product);
-    @Mapping(target = "Category.id", source = "categoryId")
+    @Mapping(target = "category.id", source = "categoryId")
     Product toProduct(ProductCreate create);
 }

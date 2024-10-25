@@ -7,6 +7,7 @@ import com.example.curso.infraestructure.adapters.input.rest.model.product.respo
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,13 @@ public class ProductRestAdapter {
     private final ProductRestMapper productRestMapper;
 
     @GetMapping
-    public ResponseEntity<Page<ProductResponse>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<ProductResponse>> findAll(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
         Page<ProductResponse> productPage = productServicePort.findAll(pageable)
                 .map(productRestMapper::toResponse);
 

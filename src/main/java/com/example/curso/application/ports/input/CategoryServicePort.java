@@ -9,4 +9,5 @@ public interface CategoryServicePort {
     Page<Category> findAll(Pageable pageable);
     Category create(Category category);
     Category update(Long id, Category category);
+    void disabledById(Long categoryId);
 }

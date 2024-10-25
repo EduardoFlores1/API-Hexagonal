@@ -22,6 +22,7 @@ public class ProductEntity {
     private Long id;
     private String name;
     private BigDecimal price;
+    @Enumerated(EnumType.STRING)
     private ProductStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

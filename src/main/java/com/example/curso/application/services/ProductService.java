@@ -37,9 +37,11 @@ public class ProductService implements ProductServicePort {
     public Product create(Product product) {
         return categoryPersistencePort.findById(product.getCategory().getId())
                         .map(category -> {
+                            var dateTime = LocalDateTime.now();
                             product.setCategory(category);
-                            product.setCreatedAt(LocalDateTime.now());
-                            product.setUpdatedAt(LocalDateTime.now());
+                            product.setStatus(ProductStatus.ENABLED);
+                            product.setCreatedAt(dateTime);
+                            product.setUpdatedAt(dateTime);
                             return productPersistencePort.save(product);
                         })
                 .orElseThrow(CategoryNotFoundException::new);

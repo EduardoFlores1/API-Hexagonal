@@ -7,6 +7,7 @@ import com.example.curso.infraestructure.adapters.input.rest.model.category.resp
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,12 @@ public class CategoryRestAdapter {
     private final CategoryRestMapper categoryRestMapper;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryResponse>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<CategoryResponse>> findAll(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
         Page<CategoryResponse> categoryPage = categoryServicePort.findAll(pageable)
                 .map(categoryRestMapper::toResponse);
 
@@ -51,6 +57,12 @@ public class CategoryRestAdapter {
         return ResponseEntity
                 .ok(categoryRestMapper.toResponse(
                         categoryServicePort.update(categoryId, categoryRestMapper.toCategory(create))));
+    }
+
+    @PatchMapping("/{categoryId}/disabled")
+    public ResponseEntity<Void> disabledById(@PathVariable Long categoryId) {
+        categoryServicePort.disabledById(categoryId);
+        return ResponseEntity.noContent().build();
     }
 
 }
