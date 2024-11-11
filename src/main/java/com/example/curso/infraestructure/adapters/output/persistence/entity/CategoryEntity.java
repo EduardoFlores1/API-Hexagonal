@@ -1,4 +1,5 @@
 package com.example.curso.infraestructure.adapters.output.persistence.entity;
+
 import com.example.curso.domain.enums.StatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,21 +14,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "products")
-public class ProductEntity {
-
+@Table(name = "categories")
+public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String name;
-    private BigDecimal price;
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity category;
 
     @PrePersist
     private void prePersist() {

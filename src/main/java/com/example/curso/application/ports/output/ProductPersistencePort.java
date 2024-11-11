@@ -10,5 +10,4 @@ public interface ProductPersistencePort {
     Optional<Product> findById(Long id);
     Page<Product> findAll(Pageable pageable);
     Product save(Product product);
-    void deleteById(Long id);
 }
