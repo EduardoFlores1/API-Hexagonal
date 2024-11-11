@@ -1,6 +1,6 @@
-package com.example.curso.infraestructure.adapters.input.rest.model.category.response;
+package com.example.curso.application.dto.categoy;
 
-import com.example.curso.domain.utils.CategoryStatus;
+import com.example.curso.domain.enums.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class CategoryResponse {
     private Long id;
     private String name;
-    private CategoryStatus status;
+    private StatusEnum status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

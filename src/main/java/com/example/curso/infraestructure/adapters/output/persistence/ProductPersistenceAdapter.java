@@ -21,19 +21,19 @@ public class ProductPersistenceAdapter implements ProductPersistencePort {
     @Override
     public Optional<Product> findById(Long id) {
         return productRepository.findById(id)
-                .map(mapper::toProduct);
+                .map(mapper::toModel);
     }
 
     @Override
     public Page<Product> findAll(Pageable pageable) {
         return productRepository.findAll(pageable)
-                .map(mapper::toProduct);
+                .map(mapper::toModel);
     }
 
     @Override
     public Product save(Product product) {
-        return mapper.toProduct(
-                productRepository.save(mapper.toProductEntity(product))
+        return mapper.toModel(
+                productRepository.save(mapper.toEntity(product))
         );
     }
 }

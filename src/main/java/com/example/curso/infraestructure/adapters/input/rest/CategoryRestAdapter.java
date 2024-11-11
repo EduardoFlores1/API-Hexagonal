@@ -1,9 +1,8 @@
 package com.example.curso.infraestructure.adapters.input.rest;
 
+import com.example.curso.application.dto.categoy.CategoryRequest;
+import com.example.curso.application.dto.categoy.CategoryResponse;
 import com.example.curso.application.ports.input.CategoryServicePort;
-import com.example.curso.infraestructure.adapters.input.rest.mapper.CategoryRestMapper;
-import com.example.curso.infraestructure.adapters.input.rest.model.category.request.CategoryCreate;
-import com.example.curso.infraestructure.adapters.input.rest.model.category.response.CategoryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CategoryRestAdapter {
 
-    private final CategoryServicePort categoryServicePort;
-    private final CategoryRestMapper categoryRestMapper;
+    private final CategoryServicePort servicePort;
 
     @GetMapping
     public ResponseEntity<Page<CategoryResponse>> findAll(
@@ -28,8 +26,7 @@ public class CategoryRestAdapter {
     ) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<CategoryResponse> categoryPage = categoryServicePort.findAll(pageable)
-                .map(categoryRestMapper::toResponse);
+        Page<CategoryResponse> categoryPage = servicePort.findAll(pageable);
 
         if (categoryPage.hasContent()) {
             return ResponseEntity.ok(categoryPage);
@@ -39,29 +36,24 @@ public class CategoryRestAdapter {
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponse> findById(@PathVariable Long categoryId) {
-        return ResponseEntity.ok(
-                categoryRestMapper.toResponse(categoryServicePort.findById(categoryId))
-        );
+        return ResponseEntity.ok(servicePort.findById(categoryId));
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> createOne(@Valid @RequestBody CategoryCreate create) {
+    public ResponseEntity<CategoryResponse> createOne(@Valid @RequestBody CategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(categoryRestMapper.toResponse(
-                        categoryServicePort.create(categoryRestMapper.toCategory(create))
-                ));
+                .body(servicePort.create(request));
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponse> update(@Valid @RequestBody CategoryCreate create, @PathVariable Long categoryId) {
+    public ResponseEntity<CategoryResponse> update(@Valid @RequestBody CategoryRequest request, @PathVariable Long categoryId) {
         return ResponseEntity
-                .ok(categoryRestMapper.toResponse(
-                        categoryServicePort.update(categoryId, categoryRestMapper.toCategory(create))));
+                .ok(servicePort.update(categoryId, request));
     }
 
     @PatchMapping("/{categoryId}/disabled")
     public ResponseEntity<Void> disabledById(@PathVariable Long categoryId) {
-        categoryServicePort.disabledById(categoryId);
+        servicePort.disabledById(categoryId);
         return ResponseEntity.noContent().build();
     }
 

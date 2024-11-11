@@ -6,6 +6,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CategoryPersistenceMapper {
-    CategoryEntity toCategoryEntity(Category category);
-    Category toCategory(CategoryEntity entity);
+    CategoryEntity toEntity(Category category);
+    Category toModel(CategoryEntity entity);
 }

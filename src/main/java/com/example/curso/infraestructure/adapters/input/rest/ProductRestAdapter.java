@@ -1,9 +1,8 @@
 package com.example.curso.infraestructure.adapters.input.rest;
 
+import com.example.curso.application.dto.product.ProductRequest;
+import com.example.curso.application.dto.product.ProductResponse;
 import com.example.curso.application.ports.input.ProductServicePort;
-import com.example.curso.infraestructure.adapters.input.rest.mapper.ProductRestMapper;
-import com.example.curso.infraestructure.adapters.input.rest.model.product.request.ProductCreate;
-import com.example.curso.infraestructure.adapters.input.rest.model.product.response.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProductRestAdapter {
 
     private final ProductServicePort productServicePort;
-    private final ProductRestMapper productRestMapper;
 
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> findAll(
@@ -28,9 +26,7 @@ public class ProductRestAdapter {
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-
-        Page<ProductResponse> productPage = productServicePort.findAll(pageable)
-                .map(productRestMapper::toResponse);
+        Page<ProductResponse> productPage = productServicePort.findAll(pageable);
 
         if (productPage.hasContent()) {
             return ResponseEntity.ok(productPage);
@@ -40,24 +36,19 @@ public class ProductRestAdapter {
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponse> findById(@PathVariable Long productId) {
-        return ResponseEntity.ok(
-                productRestMapper.toResponse(productServicePort.findById(productId))
-        );
+        return ResponseEntity.ok(productServicePort.findById(productId));
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createOne(@Valid @RequestBody ProductCreate create) {
+    public ResponseEntity<ProductResponse> createOne(@Valid @RequestBody ProductRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productRestMapper.toResponse(
-                        productServicePort.create(productRestMapper.toProduct(create))
-                ));
+                .body(productServicePort.create(request));
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductResponse> update(@Valid @RequestBody ProductCreate create, @PathVariable Long productId) {
+    public ResponseEntity<ProductResponse> update(@Valid @RequestBody ProductRequest request, @PathVariable Long productId) {
         return ResponseEntity
-                .ok(productRestMapper.toResponse(
-                        productServicePort.update(productId, productRestMapper.toProduct(create))));
+                .ok(productServicePort.update(productId, request));
     }
 
     @PatchMapping("/{productId}/disabled")

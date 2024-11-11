@@ -1,18 +1,19 @@
 package com.example.curso.application.services;
 
+import com.example.curso.application.dto.product.ProductRequest;
+import com.example.curso.application.dto.product.ProductResponse;
+import com.example.curso.application.mapper.ProductServiceMapper;
 import com.example.curso.application.ports.input.ProductServicePort;
 import com.example.curso.application.ports.output.CategoryPersistencePort;
 import com.example.curso.application.ports.output.ProductPersistencePort;
-import com.example.curso.domain.exceptions.CategoryNotFoundException;
-import com.example.curso.domain.exceptions.ProductNotFoundException;
+import com.example.curso.domain.enums.StatusEnum;
+import com.example.curso.domain.exception.NotFoundException;
 import com.example.curso.domain.models.Product;
-import com.example.curso.domain.utils.ProductStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,53 +22,66 @@ public class ProductService implements ProductServicePort {
 
     private final ProductPersistencePort productPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
+    private final ProductServiceMapper serviceMapper;
 
     @Override
-    public Product findById(Long id) {
+    public ProductResponse findById(Long id) {
         return productPersistencePort.findById(id)
-                .orElseThrow(ProductNotFoundException::new);
+                .map(serviceMapper::toResponse)
+                .orElseThrow(NotFoundException::product);
     }
 
     @Override
-    public Page<Product> findAll(Pageable pageable) {
-        return productPersistencePort.findAll(pageable);
+    public Page<ProductResponse> findAll(Pageable pageable) {
+        return productPersistencePort.findAll(pageable)
+                .map(serviceMapper::toResponse);
     }
 
     @Override
-    public Product create(Product product) {
-        return categoryPersistencePort.findById(product.getCategory().getId())
+    public ProductResponse create(ProductRequest request) {
+        return categoryPersistencePort.findById(request.getCategoryId())
                         .map(category -> {
-                            var dateTime = LocalDateTime.now();
+                            if(category.getStatus().equals(StatusEnum.DISABLED)) {
+                                throw new RuntimeException("La categoria está desabilitada");
+                            }
+
+                            Product product = serviceMapper.toModel(request);
                             product.setCategory(category);
-                            product.setStatus(ProductStatus.ENABLED);
-                            product.setCreatedAt(dateTime);
-                            product.setUpdatedAt(dateTime);
+                            product.setStatus(StatusEnum.ENABLED);
                             return productPersistencePort.save(product);
                         })
-                .orElseThrow(CategoryNotFoundException::new);
+                .map(serviceMapper::toResponse)
+                .orElseThrow(NotFoundException::category);
     }
 
     @Override
-    public Product update(Long id, Product product) {
+    public ProductResponse update(Long id, ProductRequest request) {
         return productPersistencePort.findById(id)
                 .map(productFound -> {
-                    productFound.setName(product.getName());
-                    productFound.setPrice(product.getPrice());
-                    productFound.setStatus(product.getStatus());
-                    productFound.setUpdatedAt(LocalDateTime.now());
-                    return productPersistencePort.save(productFound);
+                    if(productFound.getStatus().equals(StatusEnum.DISABLED)) {
+                        throw new RuntimeException("El producto está desabilitado");
+                    }
+                    Product product = serviceMapper.toModel(request);
+                    product.setId(id);
+                    // mantenmos estado, ya que el cambio se maneja en un servicio aparte
+                    product.setStatus(productFound.getStatus());
+                    return productPersistencePort.save(product);
                 })
-                .orElseThrow(ProductNotFoundException::new);
+                .map(serviceMapper::toResponse)
+                .orElseThrow(NotFoundException::product);
     }
 
     @Override
     public void disabledById(Long id) {
         Optional<Product> productOptional = productPersistencePort.findById(id);
         if(productOptional.isPresent()) {
-            productOptional.get().setUpdatedAt(LocalDateTime.now());
-            productOptional.get().setStatus(ProductStatus.DISABLED);
+            if (productOptional.get().getStatus().equals(StatusEnum.DISABLED)) {
+                throw new RuntimeException("Estado del producto ya desabilitado!");
+            }
+            productOptional.get().setStatus(StatusEnum.DISABLED);
             productPersistencePort.save(productOptional.get());
         }
-        throw new ProductNotFoundException();
+        throw NotFoundException.product();
     }
+
 }

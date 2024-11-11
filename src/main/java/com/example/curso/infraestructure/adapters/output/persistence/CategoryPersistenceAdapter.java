@@ -21,19 +21,19 @@ public class CategoryPersistenceAdapter implements CategoryPersistencePort {
     @Override
     public Optional<Category> findById(Long id) {
         return categoryRepository.findById(id)
-                .map(mapper::toCategory);
+                .map(mapper::toModel);
     }
 
     @Override
     public Page<Category> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable)
-                .map(mapper::toCategory);
+                .map(mapper::toModel);
     }
 
     @Override
     public Category save(Category category) {
-        return mapper.toCategory(
-                categoryRepository.save(mapper.toCategoryEntity(category))
+        return mapper.toModel(
+                categoryRepository.save(mapper.toEntity(category))
         );
     }
 }
