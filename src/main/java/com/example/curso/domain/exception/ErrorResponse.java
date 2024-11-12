@@ -13,6 +13,7 @@ import java.util.List;
 public class ErrorResponse {
     private int statusCode;
     private String url;
+    private String method;
     private String code;
     private String message;
     private List<String> details;
