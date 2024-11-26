@@ -1,9 +1,11 @@
 package com.example.curso;
 
+import com.example.curso.application.dto.categoy.CategoryRequest;
 import com.example.curso.application.dto.categoy.CategoryResponse;
 import com.example.curso.domain.enums.StatusEnum;
 import com.example.curso.domain.models.Category;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -51,5 +53,23 @@ public class CategoryDataProvider {
                 new CategoryResponse(4L, "Teclados", StatusEnum.DISABLED, createDateTime, updateDateTime),
                 new CategoryResponse(5L, "Mouses", StatusEnum.ENABLED, createDateTime, updateDateTime)
         );
+    }
+
+    public static CategoryRequest newModelMock() {
+        CategoryRequest request = new CategoryRequest();
+        setField(request, "name", "Gráficas");
+        setField(request, "status", StatusEnum.ENABLED);
+
+        return request;
+    }
+
+    private static void setField(Object target, String fieldName, Object fieldValue) {
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(target, fieldValue);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("Error al establecer el valor del campo", e);
+        }
     }
 }

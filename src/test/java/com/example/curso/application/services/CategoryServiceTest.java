@@ -1,6 +1,7 @@
 package com.example.curso.application.services;
 
 import com.example.curso.CategoryDataProvider;
+import com.example.curso.application.dto.categoy.CategoryRequest;
 import com.example.curso.application.dto.categoy.CategoryResponse;
 import com.example.curso.application.mapper.CategoryServiceMapper;
 import com.example.curso.application.ports.output.CategoryPersistencePort;
@@ -104,5 +105,17 @@ class CategoryServiceTest {
 
         verify(categoryPersistencePort).findAll(any(Pageable.class));
         verify(categoryServiceMapper, times(modelListMock.size())).toResponse(any(Category.class));
+    }
+
+    @Test
+    public void createTest() {
+
+        // Given
+        CategoryRequest modelRequestMock = CategoryDataProvider.newModelMock();
+        System.out.println(modelRequestMock.getName());
+
+        // When
+
+        // Then
     }
 }
