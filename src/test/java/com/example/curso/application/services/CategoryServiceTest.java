@@ -114,7 +114,7 @@ class CategoryServiceTest {
         CategoryRequest modelRequestMock = CategoryDataProvider.newModelMock();
         System.out.println(modelRequestMock.getName());
 
-        // When ok
+        // When ok siu
 
         // Then
     }
