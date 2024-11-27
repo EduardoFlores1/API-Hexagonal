@@ -13,12 +13,12 @@ import java.util.Optional;
 
 public class CategoryDataProvider {
 
-    public static Optional<Category> modelMock() {
+    public static Optional<Category> modelOptionalMock() {
         var createDateTime = LocalDateTime.of(2024, Month.DECEMBER, 1,12,12);
         var updateDateTime = LocalDateTime.of(2024, Month.DECEMBER, 3,15,15);
 
         return Optional.of(
-                new Category(1L, "Micrófonos", StatusEnum.DISABLED, createDateTime, updateDateTime)
+                new Category(1L, "Micrófonos", StatusEnum.ENABLED, createDateTime, updateDateTime)
         );
     }
 
@@ -26,7 +26,7 @@ public class CategoryDataProvider {
         var createDateTime = LocalDateTime.of(2024, Month.DECEMBER, 1,12,12);
         var updateDateTime = LocalDateTime.of(2024, Month.DECEMBER, 3,15,15);
 
-        return new CategoryResponse(1L, "Micrófonos", StatusEnum.DISABLED, createDateTime, updateDateTime);
+        return new CategoryResponse(1L, "Micrófonos", StatusEnum.ENABLED, createDateTime, updateDateTime);
     }
 
     public static List<Category> modelListMock() {
@@ -34,7 +34,7 @@ public class CategoryDataProvider {
         var updateDateTime = LocalDateTime.of(2024, Month.DECEMBER, 3,15,15);
 
         return List.of(
-                new Category(1L, "Micrófonos", StatusEnum.DISABLED, createDateTime, updateDateTime),
+                new Category(1L, "Micrófonos", StatusEnum.ENABLED, createDateTime, updateDateTime),
                 new Category(2L, "Sillas Gamer", StatusEnum.ENABLED, createDateTime, updateDateTime),
                 new Category(3L, "Monitores", StatusEnum.ENABLED, createDateTime, updateDateTime),
                 new Category(4L, "Teclados", StatusEnum.DISABLED, createDateTime, updateDateTime),
@@ -47,7 +47,7 @@ public class CategoryDataProvider {
         var updateDateTime = LocalDateTime.of(2024, Month.DECEMBER, 3,15,15);
 
         return List.of(
-                new CategoryResponse(1L, "Micrófonos", StatusEnum.DISABLED, createDateTime, updateDateTime),
+                new CategoryResponse(1L, "Micrófonos", StatusEnum.ENABLED, createDateTime, updateDateTime),
                 new CategoryResponse(2L, "Sillas Gamer", StatusEnum.ENABLED, createDateTime, updateDateTime),
                 new CategoryResponse(3L, "Monitores", StatusEnum.ENABLED, createDateTime, updateDateTime),
                 new CategoryResponse(4L, "Teclados", StatusEnum.DISABLED, createDateTime, updateDateTime),
@@ -55,9 +55,9 @@ public class CategoryDataProvider {
         );
     }
 
-    public static CategoryRequest newModelMock() {
+    public static CategoryRequest modelRequestMock() {
         CategoryRequest request = new CategoryRequest();
-        setField(request, "name", "Gráficas");
+        setField(request, "name", "Micrófonos");
         setField(request, "status", StatusEnum.ENABLED);
 
         return request;
@@ -71,5 +71,19 @@ public class CategoryDataProvider {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Error al establecer el valor del campo", e);
         }
+    }
+
+    public static Category modelMock() {
+        var createDateTime = LocalDateTime.of(2024, Month.DECEMBER, 1,12,12);
+        var updateDateTime = LocalDateTime.of(2024, Month.DECEMBER, 3,15,15);
+
+        return new Category(1L, "Micrófonos", StatusEnum.ENABLED, createDateTime, createDateTime);
+    }
+
+    public static Optional<Category> modelDisabledOptionalMock() {
+        var createDateTime = LocalDateTime.of(2024, Month.DECEMBER, 1,12,12);
+        var updateDateTime = LocalDateTime.of(2024, Month.DECEMBER, 3,15,15);
+
+        return Optional.of(new Category(4L, "Teclados", StatusEnum.DISABLED, createDateTime, createDateTime));
     }
 }

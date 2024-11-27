@@ -5,6 +5,7 @@ import com.example.curso.application.dto.categoy.CategoryRequest;
 import com.example.curso.application.dto.categoy.CategoryResponse;
 import com.example.curso.application.mapper.CategoryServiceMapper;
 import com.example.curso.application.ports.output.CategoryPersistencePort;
+import com.example.curso.domain.enums.StatusEnum;
 import com.example.curso.domain.exception.NotFoundException;
 import com.example.curso.domain.models.Category;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class CategoryServiceTest {
 
         // Given
         Long idCategory = 1L;
-        Optional<Category> modelMock = CategoryDataProvider.modelMock();
+        Optional<Category> modelMock = CategoryDataProvider.modelOptionalMock();
         CategoryResponse modelResponseMock = CategoryDataProvider.modelResponseMock();
 
         // When
@@ -111,11 +112,117 @@ class CategoryServiceTest {
     public void createTest() {
 
         // Given
-        CategoryRequest modelRequestMock = CategoryDataProvider.newModelMock();
-        System.out.println(modelRequestMock.getName());
+        CategoryRequest modelRequestMock = CategoryDataProvider.modelRequestMock();
+        Category modelMappedMock = new Category(null, modelRequestMock.getName(), modelRequestMock.getStatus(), null, null);
+        Category modelCreatedMock = CategoryDataProvider.modelMock();
+        CategoryResponse modelResponseMock = CategoryDataProvider.modelResponseMock();
 
         // When ok siu
+        when(categoryServiceMapper.toModel(any(CategoryRequest.class))).thenReturn(modelMappedMock);
+        when(categoryPersistencePort.save(any(Category.class))).thenReturn(modelCreatedMock);
+        when(categoryServiceMapper.toResponse(any(Category.class))).thenReturn(modelResponseMock);
+        CategoryResponse result = categoryService.create(modelRequestMock);
 
         // Then
+        assertEquals(modelRequestMock.getName(), result.getName());
+        assertEquals(modelRequestMock.getStatus(), result.getStatus());
+        assertEquals(StatusEnum.ENABLED, result.getStatus());
+        assertNotNull(result.getCreatedAt());
+        assertNotNull(result.getUpdatedAt());
+
+        verify(categoryServiceMapper).toModel(any(CategoryRequest.class));
+        verify(categoryPersistencePort).save(any(Category.class));
+        verify(categoryServiceMapper).toResponse(any(Category.class));
+    }
+
+    @Test
+    public void updateTest() {
+
+        // Given
+        Long idModel = 1L;
+        CategoryRequest modelRequestMock = CategoryDataProvider.modelRequestMock();
+        Optional<Category> modelOptionalMock = CategoryDataProvider.modelOptionalMock();
+        Category modelUpdatedMock = CategoryDataProvider.modelMock();
+        CategoryResponse modelResponseMock = CategoryDataProvider.modelResponseMock();
+
+        // When ok siu
+        when(categoryPersistencePort.findById(anyLong())).thenReturn(modelOptionalMock);
+        when(categoryPersistencePort.save(any(Category.class))).thenReturn(modelUpdatedMock);
+        when(categoryServiceMapper.toResponse(any(Category.class))).thenReturn(modelResponseMock);
+        CategoryResponse result = categoryService.update(idModel, modelRequestMock);
+
+        // Then
+        assertEquals(modelRequestMock.getName(), result.getName());
+        assertNotNull(result.getCreatedAt());
+        assertNotNull(result.getUpdatedAt());
+
+        verify(categoryPersistencePort).findById(anyLong());
+        verify(categoryPersistencePort).save(any(Category.class));
+        verify(categoryServiceMapper).toResponse(any(Category.class));
+    }
+
+    @Test
+    public void updateNotFoundExceptionTest() {
+        // Given
+
+        // When
+        when(categoryPersistencePort.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Then
+        assertThrows(NotFoundException.class,
+                () -> categoryService.update(anyLong(), CategoryDataProvider.modelRequestMock())
+                );
+
+        verify(categoryPersistencePort).findById(anyLong());
+        verify(categoryPersistencePort, never()).save(any(Category.class));
+    }
+
+    @Test
+    public void disabledByIdTest() {
+
+        // Given
+        Optional<Category> modelMock = CategoryDataProvider.modelOptionalMock();
+
+        // When
+        when(categoryPersistencePort.findById(anyLong())).thenReturn(modelMock);
+        categoryService.disabledById(anyLong());
+
+        // Then
+        verify(categoryPersistencePort).findById(anyLong());
+    }
+
+    @Test
+    public void disabledByIdNotFoundExceptionTest() {
+
+        // Given
+
+        // When
+        when(categoryPersistencePort.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Then
+        assertThrows(NotFoundException.class,
+                () -> categoryService.disabledById(anyLong())
+        );
+
+        verify(categoryPersistencePort).findById(anyLong());
+        verify(categoryPersistencePort, never()).save(any(Category.class));
+    }
+
+    @Test
+    public void disabledByIdBadRequestExceptionTest() {
+
+        // Given
+        Optional<Category> modelDisabledMock = CategoryDataProvider.modelDisabledOptionalMock();
+
+        // When
+        when(categoryPersistencePort.findById(anyLong())).thenReturn(modelDisabledMock);
+
+        // Then
+        assertThrows(RuntimeException.class,
+                () -> categoryService.disabledById(anyLong())
+        );
+
+        verify(categoryPersistencePort).findById(anyLong());
+        verify(categoryPersistencePort, never()).save(any(Category.class));
     }
 }
